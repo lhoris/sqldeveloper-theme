@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<project name="sqldeveloper-theme" basedir="." default="jar">
+	<!-- ================================================================= -->
+	<!-- P R O P E R T I E S                                               -->
+	<!-- ================================================================= -->
+	<!-- program name -->
+	<property name="name" value="sqldeveloper-theme" />
+	<!-- project version -->
+	<property name="version" value="0.0.1" />
+	<!-- the jar directory -->
+	<property name="dest.jar" value="${basedir}/build/jar" />
+	<!-- deploy dir -->
+	<property name="deploy-jar-path" value="C:\tools\sqldeveloper\ide\themes" />
+	
+	<!-- ================================================================= -->
+	<!-- I N I T                                                           -->
+	<!-- ================================================================= -->
+	<target name="init">
+		<delete dir="${dest.jar}" />
+	</target>
+
+    <!-- ================================================================= -->
+	<!-- B U I L D                                                         -->
+	<!-- ================================================================= -->
+	<target name="build" 
+	        depends="init" 
+			description="Generate the .jar file.">
+		<mkdir dir="${dest.jar}" />
+		<jar jarfile="${dest.jar}/fusionblue.jar" 
+		     compress="true" 
+			 basedir="${basedir}/src">
+			<manifest>
+				<attribute name="Implementation-Vendor" value="21st Alchemist" />
+				<attribute name="Implementation-Title" value="SQL Developer Phantom Shade Theme" />
+				<attribute name="Implementation-Version" value="${version}" />
+				<attribute name="Oracle-Version" value="12.2.1.5.42.210420.1713" />
+				<attribute name="Export-Package" value="META-INF,oracle.javatools.themes.fusionblue" />
+			</manifest>
+		</jar>
+	</target>
+
+    <!-- ================================================================= -->
+	<!-- C H E C K                                                         -->
+	<!-- ================================================================= -->	
+	<target name="check">
+	    <condition property="run">
+	        <and>
+	            <available file="${deploy-jar-path}\fusionblue.jar.orig"/>
+	        </and>
+	    </condition>
+	</target>
+
+    <!-- ================================================================= -->
+	<!-- B A C K U P                                                       -->
+	<!-- ================================================================= -->		
+	<target name="backup" 
+	        depends="check" 
+			unless="run">
+		<copy file="${deploy-jar-path}\fusionblue.jar" tofile="${deploy-jar-path}\fusionblue.jar.orig"></copy>
+	</target>
+
+    <!-- ================================================================= -->
+	<!-- D E P L O Y                                                       -->
+	<!-- ================================================================= -->			
+	<target name="deploy" 
+		    depends="build,backup,check"
+		    if="run"
+		    description="Deploy the .jar file.">
+		<copy todir="${deploy-jar-path}">
+			<fileset dir="${dest.jar}"></fileset>
+		</copy>
+	</target>
+</project>
